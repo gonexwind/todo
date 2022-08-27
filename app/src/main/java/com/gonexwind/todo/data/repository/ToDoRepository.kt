@@ -2,9 +2,11 @@ package com.gonexwind.todo.data.repository
 
 import com.gonexwind.todo.data.ToDoDao
 import com.gonexwind.todo.data.model.ToDoTask
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+@ViewModelScoped
 class ToDoRepository @Inject constructor(
     private val dao: ToDoDao
 ) {
