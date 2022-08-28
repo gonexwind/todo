@@ -4,11 +4,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.gonexwind.todo.ui.screen.list.ListScreen
 import com.gonexwind.todo.util.Constants.LIST_ARGUMENT_KEY
 import com.gonexwind.todo.util.Constants.LIST_SCREEN
 
 fun NavGraphBuilder.listComposable(
-    navigateToTaskScreen: (Int) -> Unit
+    navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     composable(
         route = LIST_SCREEN,
@@ -16,6 +17,6 @@ fun NavGraphBuilder.listComposable(
             type = NavType.StringType
         })
     ) {
-
+        ListScreen(navigateToTaskScreen)
     }
 }
