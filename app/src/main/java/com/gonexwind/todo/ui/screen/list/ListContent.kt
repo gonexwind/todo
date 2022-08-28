@@ -18,9 +18,24 @@ import com.gonexwind.todo.data.model.Priority
 import com.gonexwind.todo.data.model.ToDoTask
 import com.gonexwind.todo.ui.theme.LARGE_PADDING
 import com.gonexwind.todo.ui.theme.PRIORITY_INDICATOR_SIZE
+import com.gonexwind.todo.util.RequestState
 
 @Composable
 fun ListContent(
+    tasks: RequestState<List<ToDoTask>>,
+    navigateToTaskScreen: (taskId: Int) -> Unit
+) {
+    if (tasks is RequestState.Success) {
+        if (tasks.data.isEmpty()) {
+            EmptyContent()
+        } else {
+            DisplayTasks(tasks.data, navigateToTaskScreen)
+        }
+    }
+}
+
+@Composable
+fun DisplayTasks(
     tasks: List<ToDoTask>,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
@@ -60,11 +75,7 @@ fun TaskItem(
                         .weight(1f),
                     contentAlignment = Alignment.TopEnd,
                 ) {
-                    Canvas(
-                        modifier = Modifier
-                            .width(PRIORITY_INDICATOR_SIZE)
-                            .height(PRIORITY_INDICATOR_SIZE)
-                    ) {
+                    Canvas(modifier = Modifier.size(PRIORITY_INDICATOR_SIZE)) {
                         drawCircle(color = toDoTask.priority.color)
                     }
                 }
