@@ -7,6 +7,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.gonexwind.todo.R
@@ -19,18 +21,18 @@ fun ListScreen(
     navigateToTaskScreen: (taskId: Int) -> Unit,
     sharedViewModel: SharedViewModel
 ) {
+    LaunchedEffect(key1 = true) { sharedViewModel.getAllTasks() }
+
+    val allTasks by sharedViewModel.allTasks.collectAsState()
     val searchAppBarState: SearchAppBarState by sharedViewModel.searchAppBarState
     val searchTextState: String by sharedViewModel.searchTextState
 
     Scaffold(
         topBar = { ListAppBar(sharedViewModel, searchAppBarState, searchTextState) },
-        content = { ListContent() },
+        content = { ListContent(allTasks, navigateToTaskScreen) },
         floatingActionButton = {
             FloatingActionButton(onClick = { navigateToTaskScreen(-1) }) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(R.string.add_task)
-                )
+                Icon(Icons.Filled.Add, stringResource(R.string.add_task))
             }
         }
     )
