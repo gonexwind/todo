@@ -5,8 +5,11 @@
     <string name="add_task">Add Task</string>
     <string name="short_tasks">Short Tasks</string>
     <string name="delete_all">Delete All</string>
+    <string name="delete">Delete</string>
+    <string name="update">Update</string>
     <string name="search">Search</string>
     <string name="close">Close</string>
     <string name="sad_icon">Sad Icon</string>
     <string name="empty_content">No Tasks Found</string>
+    <string name="back_arrow">Back Arrow</string>
 </resources>
