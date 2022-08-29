@@ -16,8 +16,15 @@ import com.gonexwind.todo.data.model.ToDoTask
 import com.gonexwind.todo.util.Action
 
 @Composable
-fun TaskAppBar(navigateToListScreen: (Action) -> Unit) {
-    NewTaskAppBar(navigateToListScreen)
+fun TaskAppBar(
+    selectedTask: ToDoTask?,
+    navigateToListScreen: (Action) -> Unit
+) {
+    if (selectedTask == null) {
+        NewTaskAppBar(navigateToListScreen)
+    } else {
+        ExistingTaskAppBar(selectedTask, navigateToListScreen)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

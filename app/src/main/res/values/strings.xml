@@ -12,4 +12,7 @@
     <string name="sad_icon">Sad Icon</string>
     <string name="empty_content">No Tasks Found</string>
     <string name="back_arrow">Back Arrow</string>
+    <string name="drop_down">Dropdown</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
 </resources>
