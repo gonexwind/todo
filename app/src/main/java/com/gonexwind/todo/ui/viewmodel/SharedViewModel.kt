@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.gonexwind.todo.data.model.Priority
 import com.gonexwind.todo.data.model.ToDoTask
 import com.gonexwind.todo.data.repository.ToDoRepository
+import com.gonexwind.todo.util.Constants.MAX_TITLE_LENGTH
 import com.gonexwind.todo.util.RequestState
 import com.gonexwind.todo.util.SearchAppBarState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,4 +68,12 @@ class SharedViewModel @Inject constructor(
             priority.value = Priority.LOW
         }
     }
+
+    fun updateTitle(newTitle: String) {
+        if (newTitle.length < MAX_TITLE_LENGTH) {
+            title.value = newTitle
+        }
+    }
+
+    fun validateFields(): Boolean = title.value.isNotEmpty() && description.value.isNotEmpty()
 }
