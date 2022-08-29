@@ -1,5 +1,6 @@
 package com.gonexwind.todo.navigation.destination
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -8,6 +9,7 @@ import com.gonexwind.todo.ui.screen.list.ListScreen
 import com.gonexwind.todo.ui.viewmodel.SharedViewModel
 import com.gonexwind.todo.util.Constants.LIST_ARGUMENT_KEY
 import com.gonexwind.todo.util.Constants.LIST_SCREEN
+import com.gonexwind.todo.util.toAction
 
 fun NavGraphBuilder.listComposable(
     navigateToTaskScreen: (taskId: Int) -> Unit,
@@ -19,6 +21,12 @@ fun NavGraphBuilder.listComposable(
             type = NavType.StringType
         })
     ) {
+        val action = it.arguments?.getString(LIST_ARGUMENT_KEY).toAction()
+        
+        LaunchedEffect(key1 = action) {
+            sharedViewModel.action.value = action
+        }
+
         ListScreen(navigateToTaskScreen, sharedViewModel)
     }
 }
