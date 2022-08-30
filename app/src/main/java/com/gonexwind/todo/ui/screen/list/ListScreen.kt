@@ -21,12 +21,13 @@ fun ListScreen(
 
     val action by sharedViewModel.action
     val allTasks by sharedViewModel.allTasks.collectAsState()
+    val searchedTasks by sharedViewModel.searchedTasks.collectAsState()
     val searchAppBarState: SearchAppBarState by sharedViewModel.searchAppBarState
     val searchTextState: String by sharedViewModel.searchTextState
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     DisplaySnackBar(
-        snackbarHostState,
+        snackBarHostState,
         { sharedViewModel.handleDatabaseAction(action) },
         { sharedViewModel.action.value = it },
         sharedViewModel.title.value,
@@ -34,9 +35,17 @@ fun ListScreen(
     )
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackBarHostState) },
         topBar = { ListAppBar(sharedViewModel, searchAppBarState, searchTextState) },
-        content = { ListContent(allTasks, navigateToTaskScreen) },
+        content = { innerPadding ->
+            ListContent(
+                innerPadding,
+                allTasks,
+                searchedTasks,
+                searchAppBarState,
+                navigateToTaskScreen
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { navigateToTaskScreen(-1) }) {
                 Icon(Icons.Filled.Add, stringResource(R.string.add_task))
@@ -47,7 +56,7 @@ fun ListScreen(
 
 @Composable
 fun DisplaySnackBar(
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     handleDatabaseActions: () -> Unit,
     onUndoClicked: (Action) -> Unit,
     taskTitle: String,
@@ -59,11 +68,11 @@ fun DisplaySnackBar(
     LaunchedEffect(key1 = action) {
         if (action != Action.NO_ACTION) {
             scope.launch {
-                val snackbarResult = snackbarHostState.showSnackbar(
+                val snackBarResult = snackBarHostState.showSnackbar(
                     "${action.name} : $taskTitle",
                     setActionLabel(action),
                 )
-                undoDeletedTask(action, snackbarResult, onUndoClicked)
+                undoDeletedTask(action, snackBarResult, onUndoClicked)
             }
         }
     }
@@ -73,10 +82,10 @@ private fun setActionLabel(action: Action): String = if (action.name == "DELETE"
 
 private fun undoDeletedTask(
     action: Action,
-    snackbarResult: SnackbarResult,
+    snackBarResult: SnackbarResult,
     onClick: (Action) -> Unit
 ) {
-    if (snackbarResult == SnackbarResult.ActionPerformed && action == Action.DELETE) {
+    if (snackBarResult == SnackbarResult.ActionPerformed && action == Action.DELETE) {
         onClick(Action.UNDO)
     }
 }

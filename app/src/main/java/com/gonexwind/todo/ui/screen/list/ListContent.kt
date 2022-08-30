@@ -19,27 +19,48 @@ import com.gonexwind.todo.data.model.ToDoTask
 import com.gonexwind.todo.ui.theme.LARGE_PADDING
 import com.gonexwind.todo.ui.theme.PRIORITY_INDICATOR_SIZE
 import com.gonexwind.todo.util.RequestState
+import com.gonexwind.todo.util.SearchAppBarState
 
 @Composable
 fun ListContent(
-    tasks: RequestState<List<ToDoTask>>,
+    innerPadding: PaddingValues,
+    allTasks: RequestState<List<ToDoTask>>,
+    searchedTasks: RequestState<List<ToDoTask>>,
+    searchAppBarState: SearchAppBarState,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    if (tasks is RequestState.Success) {
-        if (tasks.data.isEmpty()) {
-            EmptyContent()
-        } else {
-            DisplayTasks(tasks.data, navigateToTaskScreen)
+    if (searchAppBarState == SearchAppBarState.TRIGGERED) {
+        if (searchedTasks is RequestState.Success) {
+            HandleListContent(innerPadding, searchedTasks.data, navigateToTaskScreen)
+        }
+    } else {
+        if (allTasks is RequestState.Success) {
+            HandleListContent(innerPadding, allTasks.data, navigateToTaskScreen)
         }
     }
 }
 
 @Composable
-fun DisplayTasks(
+fun HandleListContent(
+    innerPadding: PaddingValues,
     tasks: List<ToDoTask>,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    LazyColumn {
+    if (tasks.isEmpty()) EmptyContent()
+    else DisplayTasks(innerPadding, tasks, navigateToTaskScreen)
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun DisplayTasks(
+    innerPadding: PaddingValues,
+    tasks: List<ToDoTask>,
+    navigateToTaskScreen: (taskId: Int) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.consumedWindowInsets(innerPadding),
+        contentPadding = innerPadding
+    ) {
         items(items = tasks, key = { it.id }) { task ->
             TaskItem(task, navigateToTaskScreen)
         }

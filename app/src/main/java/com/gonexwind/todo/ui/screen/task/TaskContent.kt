@@ -26,7 +26,7 @@ fun TaskContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(LARGE_PADDING)
+            .padding(LARGE_PADDING),
     ) {
         Divider(Modifier.height(TOP_APP_BAR_HEIGHT), color = MaterialTheme.colorScheme.background)
         OutlinedTextField(

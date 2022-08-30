@@ -44,7 +44,7 @@ fun ListAppBar(
                 sharedViewModel.searchAppBarState.value = SearchAppBarState.CLOSED
                 sharedViewModel.searchTextState.value = ""
             },
-            onSearchClicked = {},
+            onSearchClicked = { sharedViewModel.searchTasks(it) },
         )
     }
 }
@@ -76,9 +76,7 @@ fun ListAppBarActions(
 }
 
 @Composable
-fun SearchAction(
-    onClick: () -> Unit
-) {
+fun SearchAction(onClick: () -> Unit) {
     IconButton(onClick) { Icon(Icons.Filled.Search, stringResource(R.string.search_tasks)) }
 }
 
@@ -125,18 +123,11 @@ fun SortAction(
 }
 
 @Composable
-fun DeleteAction(
-    onClick: () -> Unit
-) {
+fun DeleteAction(onClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
-    IconButton(
-        onClick = { expanded = true }
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_option),
-            contentDescription = stringResource(R.string.short_tasks),
-        )
+    IconButton(onClick = { expanded = true }) {
+        Icon(painterResource(R.drawable.ic_option), stringResource(R.string.short_tasks))
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
