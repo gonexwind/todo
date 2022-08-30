@@ -20,6 +20,7 @@ import com.gonexwind.todo.data.model.Priority
 import com.gonexwind.todo.ui.components.PriorityItem
 import com.gonexwind.todo.ui.theme.TOP_APP_BAR_HEIGHT
 import com.gonexwind.todo.ui.viewmodel.SharedViewModel
+import com.gonexwind.todo.util.Action
 import com.gonexwind.todo.util.SearchAppBarState
 import com.gonexwind.todo.util.TrailingIconState
 
@@ -35,7 +36,7 @@ fun ListAppBar(
                 sharedViewModel.searchAppBarState.value = SearchAppBarState.OPENED
             },
             onSortClicked = {},
-            onDeleteClicked = {},
+            onDeleteAllClicked = { sharedViewModel.action.value = Action.DELETE_ALL },
         )
         else -> SearchAppBar(
             text = searchTextState,
@@ -54,12 +55,12 @@ fun ListAppBar(
 fun DefaultListAppBar(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
-    onDeleteClicked: () -> Unit,
+    onDeleteAllClicked: () -> Unit,
 ) {
     SmallTopAppBar(
         title = { Text(stringResource(R.string.tasks)) },
         actions = {
-            ListAppBarActions(onSearchClicked, onSortClicked, onDeleteClicked)
+            ListAppBarActions(onSearchClicked, onSortClicked, onDeleteAllClicked)
         },
     )
 }
@@ -68,11 +69,11 @@ fun DefaultListAppBar(
 fun ListAppBarActions(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
-    onDeleteClicked: () -> Unit
+    onDeleteAllClicked: () -> Unit
 ) {
     SearchAction(onSearchClicked)
     SortAction(onSortClicked)
-    DeleteAction(onDeleteClicked)
+    DeleteAllAction(onDeleteAllClicked)
 }
 
 @Composable
@@ -123,7 +124,7 @@ fun SortAction(
 }
 
 @Composable
-fun DeleteAction(onClick: () -> Unit) {
+fun DeleteAllAction(onClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     IconButton(onClick = { expanded = true }) {
@@ -211,7 +212,7 @@ fun DefaultListAppBarPreview() {
     DefaultListAppBar(
         onSearchClicked = {},
         onSortClicked = {},
-        onDeleteClicked = {},
+        onDeleteAllClicked = {},
     )
 }
 

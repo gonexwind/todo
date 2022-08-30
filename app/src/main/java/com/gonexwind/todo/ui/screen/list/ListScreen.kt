@@ -69,13 +69,18 @@ fun DisplaySnackBar(
         if (action != Action.NO_ACTION) {
             scope.launch {
                 val snackBarResult = snackBarHostState.showSnackbar(
-                    "${action.name} : $taskTitle",
+                    setMessage(action, taskTitle),
                     setActionLabel(action),
                 )
                 undoDeletedTask(action, snackBarResult, onUndoClicked)
             }
         }
     }
+}
+
+private fun setMessage(action: Action, taskTitle: String): String = when (action) {
+    Action.DELETE_ALL -> "All Task Removed"
+    else -> "${action.name}: $taskTitle"
 }
 
 private fun setActionLabel(action: Action): String = if (action.name == "DELETE") "UNDO" else "OK"
