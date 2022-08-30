@@ -28,6 +28,7 @@ fun ListScreen(
     DisplaySnackBar(
         snackbarHostState,
         { sharedViewModel.handleDatabaseAction(action) },
+        { sharedViewModel.action.value = it },
         sharedViewModel.title.value,
         action
     )
@@ -48,6 +49,7 @@ fun ListScreen(
 fun DisplaySnackBar(
     snackbarHostState: SnackbarHostState,
     handleDatabaseActions: () -> Unit,
+    onUndoClicked: (Action) -> Unit,
     taskTitle: String,
     action: Action,
 ) {
@@ -57,8 +59,24 @@ fun DisplaySnackBar(
     LaunchedEffect(key1 = action) {
         if (action != Action.NO_ACTION) {
             scope.launch {
-                snackbarHostState.showSnackbar("${action.name} : $taskTitle")
+                val snackbarResult = snackbarHostState.showSnackbar(
+                    "${action.name} : $taskTitle",
+                    setActionLabel(action),
+                )
+                undoDeletedTask(action, snackbarResult, onUndoClicked)
             }
         }
+    }
+}
+
+private fun setActionLabel(action: Action): String = if (action.name == "DELETE") "UNDO" else "OK"
+
+private fun undoDeletedTask(
+    action: Action,
+    snackbarResult: SnackbarResult,
+    onClick: (Action) -> Unit
+) {
+    if (snackbarResult == SnackbarResult.ActionPerformed && action == Action.DELETE) {
+        onClick(Action.UNDO)
     }
 }
