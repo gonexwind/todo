@@ -25,17 +25,27 @@ import com.gonexwind.todo.util.SearchAppBarState
 fun ListContent(
     innerPadding: PaddingValues,
     allTasks: RequestState<List<ToDoTask>>,
+    lowPriorityTasks: List<ToDoTask>,
+    highPriorityTasks: List<ToDoTask>,
+    sortState: RequestState<Priority>,
     searchedTasks: RequestState<List<ToDoTask>>,
     searchAppBarState: SearchAppBarState,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    if (searchAppBarState == SearchAppBarState.TRIGGERED) {
-        if (searchedTasks is RequestState.Success) {
-            HandleListContent(innerPadding, searchedTasks.data, navigateToTaskScreen)
-        }
-    } else {
-        if (allTasks is RequestState.Success) {
-            HandleListContent(innerPadding, allTasks.data, navigateToTaskScreen)
+    if (sortState is RequestState.Success) {
+        when {
+            searchAppBarState == SearchAppBarState.TRIGGERED -> if (searchedTasks is RequestState.Success) {
+                HandleListContent(innerPadding, searchedTasks.data, navigateToTaskScreen)
+            }
+            sortState.data == Priority.NONE -> if (allTasks is RequestState.Success) {
+                HandleListContent(innerPadding, allTasks.data, navigateToTaskScreen)
+            }
+            sortState.data == Priority.LOW -> {
+                HandleListContent(innerPadding, lowPriorityTasks, navigateToTaskScreen)
+            }
+            sortState.data == Priority.HIGH -> {
+                HandleListContent(innerPadding, highPriorityTasks, navigateToTaskScreen)
+            }
         }
     }
 }
@@ -117,8 +127,8 @@ fun TaskItemPreview() {
     TaskItem(
         toDoTask = ToDoTask(
             id = 0,
-            title = "Angil",
-            description = "Enak WFH",
+            title = "",
+            description = "",
             priority = Priority.MEDIUM
         ),
         navigateToTaskScreen = {}
