@@ -30,7 +30,6 @@ fun EmptyContent() {
         )
         Text(
             stringResource(R.string.empty_content),
-            fontWeight = FontWeight.Bold,
             fontSize = MaterialTheme.typography.headlineSmall.fontSize,
         )
     }

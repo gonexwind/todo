@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.gonexwind.todo.R
 import com.gonexwind.todo.data.model.Priority
+import com.gonexwind.todo.ui.components.DisplayAlertDialog
 import com.gonexwind.todo.ui.components.PriorityItem
 import com.gonexwind.todo.ui.theme.TOP_APP_BAR_HEIGHT
 import com.gonexwind.todo.ui.viewmodel.SharedViewModel
@@ -69,11 +70,21 @@ fun DefaultListAppBar(
 fun ListAppBarActions(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
-    onDeleteAllClicked: () -> Unit
+    onDeleteAllConfirm: () -> Unit
 ) {
+    var openDialog by remember { mutableStateOf(false) }
+
+    DisplayAlertDialog(
+        title = stringResource(R.string.delete_all_task),
+        message = stringResource(R.string.delete_all_task_confirmation),
+        openDialog = openDialog,
+        closeDialog = { openDialog = false },
+        onConfirmClicked = { onDeleteAllConfirm() }
+    )
+
     SearchAction(onSearchClicked)
     SortAction(onSortClicked)
-    DeleteAllAction(onDeleteAllClicked)
+    DeleteAllAction { openDialog = true }
 }
 
 @Composable
