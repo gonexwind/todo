@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdk 33
@@ -76,4 +77,5 @@ dependencies {
     // Dagger - Hilt
     implementation 'com.google.dagger:hilt-android:2.43.2'
     kapt 'com.google.dagger:hilt-compiler:2.43.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

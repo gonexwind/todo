@@ -6,13 +6,14 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.gonexwind.todo.R
 import com.gonexwind.todo.data.model.Priority
 import com.gonexwind.todo.data.model.ToDoTask
+import com.gonexwind.todo.ui.components.DisplayAlertDialog
 import com.gonexwind.todo.util.Action
 
 @Composable
@@ -61,10 +62,28 @@ fun ExistingTaskAppBar(
         navigationIcon = { CloseAction(navigateToListScreen) },
         title = { Text(selectedTask.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         actions = {
-            DeleteAction(navigateToListScreen)
-            UpdateAction(navigateToListScreen)
+            ExistingTaskAppBarAction(selectedTask, navigateToListScreen)
         }
     )
+}
+
+@Composable
+fun ExistingTaskAppBarAction(
+    selectedTask: ToDoTask,
+    navigateToListScreen: (Action) -> Unit
+) {
+    var openDialog by remember { mutableStateOf(false) }
+
+    DisplayAlertDialog(
+        title = stringResource(R.string.delete_task, selectedTask.title),
+        message = stringResource(R.string.delete_task_confirmation),
+        openDialog = openDialog,
+        closeDialog = { openDialog = false },
+        onConfirmClicked = { navigateToListScreen(Action.DELETE) }
+    )
+
+    DeleteAction { openDialog = true }
+    UpdateAction(navigateToListScreen)
 }
 
 
@@ -76,8 +95,8 @@ fun CloseAction(onClick: (Action) -> Unit) {
 }
 
 @Composable
-fun DeleteAction(onClick: (Action) -> Unit) {
-    IconButton(onClick = { onClick(Action.DELETE) }) {
+fun DeleteAction(onClick: () -> Unit) {
+    IconButton(onClick = { onClick() }) {
         Icon(Icons.Filled.Delete, stringResource(R.string.delete))
     }
 }
@@ -95,6 +114,7 @@ fun UpdateAction(onClick: (Action) -> Unit) {
 fun NewTaskAppBarPreview() {
     NewTaskAppBar(navigateToListScreen = {})
 }
+
 @Preview
 @Composable
 fun ExistingTaskAppBarPreview() {
