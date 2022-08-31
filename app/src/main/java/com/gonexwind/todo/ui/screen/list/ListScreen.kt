@@ -47,6 +47,10 @@ fun ListScreen(
             ListContent(
                 innerPadding,
                 allTasks,
+                onSwipeToDelete =  { action, task ->
+                    sharedViewModel.action.value = action
+                    sharedViewModel.updateTaskFields(task)
+                },
                 lowPriorityTasks,
                 highPriorityTasks,
                 sortState,

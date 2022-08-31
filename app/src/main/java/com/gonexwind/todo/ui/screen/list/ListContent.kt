@@ -1,23 +1,37 @@
 package com.gonexwind.todo.ui.screen.list
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.gonexwind.todo.R
 import com.gonexwind.todo.data.model.Priority
 import com.gonexwind.todo.data.model.ToDoTask
+import com.gonexwind.todo.ui.theme.HighPriorityColor
+import com.gonexwind.todo.ui.theme.LARGEST_PADDING
 import com.gonexwind.todo.ui.theme.LARGE_PADDING
 import com.gonexwind.todo.ui.theme.PRIORITY_INDICATOR_SIZE
+import com.gonexwind.todo.util.Action
 import com.gonexwind.todo.util.RequestState
 import com.gonexwind.todo.util.SearchAppBarState
 
@@ -25,6 +39,7 @@ import com.gonexwind.todo.util.SearchAppBarState
 fun ListContent(
     innerPadding: PaddingValues,
     allTasks: RequestState<List<ToDoTask>>,
+    onSwipeToDelete: (Action, ToDoTask) -> Unit,
     lowPriorityTasks: List<ToDoTask>,
     highPriorityTasks: List<ToDoTask>,
     sortState: RequestState<Priority>,
@@ -35,16 +50,36 @@ fun ListContent(
     if (sortState is RequestState.Success) {
         when {
             searchAppBarState == SearchAppBarState.TRIGGERED -> if (searchedTasks is RequestState.Success) {
-                HandleListContent(innerPadding, searchedTasks.data, navigateToTaskScreen)
+                HandleListContent(
+                    innerPadding,
+                    searchedTasks.data,
+                    onSwipeToDelete,
+                    navigateToTaskScreen
+                )
             }
             sortState.data == Priority.NONE -> if (allTasks is RequestState.Success) {
-                HandleListContent(innerPadding, allTasks.data, navigateToTaskScreen)
+                HandleListContent(
+                    innerPadding,
+                    allTasks.data,
+                    onSwipeToDelete,
+                    navigateToTaskScreen
+                )
             }
             sortState.data == Priority.LOW -> {
-                HandleListContent(innerPadding, lowPriorityTasks, navigateToTaskScreen)
+                HandleListContent(
+                    innerPadding,
+                    lowPriorityTasks,
+                    onSwipeToDelete,
+                    navigateToTaskScreen
+                )
             }
             sortState.data == Priority.HIGH -> {
-                HandleListContent(innerPadding, highPriorityTasks, navigateToTaskScreen)
+                HandleListContent(
+                    innerPadding,
+                    highPriorityTasks,
+                    onSwipeToDelete,
+                    navigateToTaskScreen
+                )
             }
         }
     }
@@ -54,17 +89,19 @@ fun ListContent(
 fun HandleListContent(
     innerPadding: PaddingValues,
     tasks: List<ToDoTask>,
+    onSwipeToDelete: (Action, ToDoTask) -> Unit,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     if (tasks.isEmpty()) EmptyContent()
-    else DisplayTasks(innerPadding, tasks, navigateToTaskScreen)
+    else DisplayTasks(innerPadding, tasks, onSwipeToDelete, navigateToTaskScreen)
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun DisplayTasks(
     innerPadding: PaddingValues,
     tasks: List<ToDoTask>,
+    onSwipeToDelete: (Action, ToDoTask) -> Unit,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     LazyColumn(
@@ -72,10 +109,47 @@ fun DisplayTasks(
         contentPadding = innerPadding
     ) {
         items(items = tasks, key = { it.id }) { task ->
-            TaskItem(task, navigateToTaskScreen)
+            val dismissState = rememberDismissState()
+            val dismissDirection = dismissState.dismissDirection
+            val isDismissed = dismissState.isDismissed(DismissDirection.EndToStart)
+            if (isDismissed && dismissDirection == DismissDirection.EndToStart) {
+                onSwipeToDelete(Action.DELETE, task)
+            }
+            val degrees by animateFloatAsState(
+                if (dismissState.targetValue == DismissValue.Default) 0f else -45f
+            )
+
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.EndToStart),
+                dismissThresholds = { FractionalThreshold(0.2f) },
+                background = { RedBackground(degrees) },
+                dismissContent = {
+                    TaskItem(task, navigateToTaskScreen)
+                }
+            )
         }
     }
 }
+
+@Composable
+fun RedBackground(degrees: Float) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(HighPriorityColor)
+            .padding(horizontal = LARGEST_PADDING),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Icon(
+            Icons.Filled.Delete,
+            stringResource(R.string.delete),
+            tint = Color.White,
+            modifier = Modifier.rotate(degrees)
+        )
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
