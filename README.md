@@ -2,15 +2,13 @@
 
 # **To Do**
 
-### Let's Start Our Labs!
-
-This application is purpose to help user find food or drink recipes.<br><br>
+This application is purpose to help user create todo activities.<br><br>
 [![Platform](https://img.shields.io/badge/platform-Android-green.svg)](http://developer.android.com/index.html) 
 
 
 ## Download App
 
-[![TODO](https://img.shields.io/badge/MyRecipes-APK-red.svg?style=for-the-badge&logo=android)](https://github.com/gonexwind/myrecipes/releases/download/v1.0.0/myrecipes-v1.0.0.apk)
+[![TODO](https://img.shields.io/badge/TODO-APK-red.svg?style=for-the-badge&logo=android)](https://github.com/gonexwind/todo/releases/download/v1.0.0/todo-v1.0.0.apk)
 
 ## Features
 - List Tasks
